@@ -75,4 +75,20 @@ describe('Board, User, and Cheese Models', () => {
         const updatedUser = await foundUsers[0].update({email: "brianna@gmail.com"});
         expect(updatedUser.email).toBe("brianna@gmail.com");
     });
+    test('User can have many Boards', async () => {
+        await sequelize.sync({ force: true }); 
+        const testUser = await User.create({name: "Brianna", email: "brianna@brianna.com"})
+        const testBoard1 = await Board.create({type: "soft cheese", description: "good cheese", rating: 5})
+        const testBoard2 = await Board.create({type: "hard cheese", description: "aight cheese", rating: 4})
+        const testBoard3 = await Board.create({type: "medium cheese", description: "meh cheese", rating: 3})
+        await testUser.addBoard(testBoard1);  
+        await testUser.addBoard(testBoard2); 
+        await testUser.addBoard(testBoard3);         
+
+        const sharkBoard = await testUser.getBoards();
+
+        expect(sharkBoard.length).toBe(3);
+        expect(testUser[0] instanceof Board).toBeTruthy;
+    });
+
 })
