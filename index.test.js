@@ -90,5 +90,29 @@ describe('Board, User, and Cheese Models', () => {
         expect(sharkBoard.length).toBe(3);
         expect(testUser[0] instanceof Board).toBeTruthy;
     });
+    
+    test('Many boards can have many cheeses & many cheeses can be on many boards', async () => {
+            await sequelize.sync({ force: true });
 
+            const testBoard1 = await Board.create({type: "soft cheese", description: "good cheese", rating: 5})
+            const testBoard2 = await Board.create({type: "hard cheese", description: "aight cheese", rating: 4})
+
+            const testCheese1 = await Cheese.create({title: "Gouda", description: "delicious"})
+            const testCheese2 = await Cheese.create({title: "Parmesan", description: "hard"})
+
+            await testBoard1.addCheese(testCheese1);
+            await testBoard1.addCheese(testCheese2);
+            await testBoard2.addCheese(testCheese2);
+    
+            const sharkBoard = await testBoard1.getCheeses()
+            const charcBoard = await testBoard2.getCheeses()
+            const cheese1Boards = await testCheese1.getBoards()
+            const cheese2Boards = await testCheese2.getBoards()
+    
+            expect(sharkBoard.length).toBe(2);
+            expect(charcBoard.length).toBe(1);
+            expect(cheese1Boards.length).toBe(1); 
+            expect(cheese2Boards.length).toBe(2);
+        
+        });
 })
